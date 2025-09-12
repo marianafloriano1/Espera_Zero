@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Arvo&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <title>Espera Zero</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="texto1">
+            Tempo Total <span class="de">de</span> Espera: 
+        </h1>
+        <span id="total">00:00</span>
+        <img class="relogio" src="{{ url_for('static', filename='img/relogio.png') }}" alt="relogio">
+        <img class="mancha_amarela" src="{{ url_for('static', filename='img/mancha1.png') }}" alt="Mancha Amarela">
+        <img class="mancha_azul" src="{{ url_for('static', filename='img/mancha2.png') }}" alt="Mancha Azul">
+
+<a href="{{ url_for('opcoes') }}" class="botao">
+    Ver por Caixas <i class="bi bi-chevron-right"></i>
+</a>
+
+    </div>
+
+    <script>
+        async function atualizarContagem() {
+            try {
+                const resp = await fetch("/count");  // chama o Flask
+                const texto = await resp.text();
+
+                // extrai apenas o número de minutos usando regex
+                const match = texto.match(/Tempo total: (\d+) minutos/);
+                if (match) {
+                    let minutos = parseInt(match[1]);
+
+                    let tempoFormatado;
+                    if (minutos === 0) {
+                        // se não houver pessoas, mostra 0
+                        tempoFormatado = "00:00";
+                    } else {
+                        // converte para horas se >= 60
+                        let horas = Math.floor(minutos / 60);
+                        let restoMinutos = minutos % 60;
+                        let minutosFormatados = restoMinutos.toString().padStart(2, '0');
+
+                        document.getElementById("total").textContent = `${horas}:${minutosFormatados}`;
+
+                    }
+
+                }
+            } catch (err) {
+                console.error("Erro ao atualizar:", err);
+            }
+        }
+
+        // atualiza a cada 2 segundos
+        setInterval(atualizarContagem, 2000);
+        atualizarContagem();
+    </script>
+
+</body>
+
+</html>

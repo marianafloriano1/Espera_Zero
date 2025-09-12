@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Arvo&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Autoatendimento</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <img class="img2" src="{{ url_for('static', filename='img/7.png') }}" alt="Imagem">
+        <p class="texto_preferencial">Autoatendimento</p>
+        <p class="texto_preferencial2">Total <span id="total2">00:00</span></p>
+
+        <div class="grid">
+            <div class="retangulo_branco2">
+                <img class="img4" src="{{ url_for('static', filename='img/caixa.png') }}" alt="Imagem">
+                <p class="texto_contagem">Existem 1 Caixa</p>
+            </div>
+
+            <div class="retangulo_branco2">
+                <div class="linha">
+                    <img class="img3" src="{{ url_for('static', filename='img/pessoas.png') }}" alt="Imagem">
+                    <p class="texto_contagem">Pessoas na fila: <span id="pessoas">0</span></p>
+                </div>
+            </div>
+
+            <div class="retangulo_branco2">
+                <div class="linha">
+                    <img class="img3" src="{{ url_for('static', filename='img/bandeira.png') }}" alt="Imagem">
+                    <p class="texto_tempo"><span id="caixaVazio">1 Caixa vazio</span></p>
+                </div>
+            </div>
+        </div>
+
+        <a href="{{ url_for('opcoes') }}" class="botao2">
+            <i class="bi bi-chevron-left"></i> Voltar
+        </a>
+    </div>
+
+    <script>
+        async function atualizarContagem() {
+            try {
+                const resp = await fetch("/count");  
+                const texto = await resp.text();
+
+                const matchPessoas = texto.match(/Pessoas: (\d+)/);
+                const matchTempo = texto.match(/Tempo total: (\d+) minutos/);
+
+                let pessoas = 0;
+                if (matchPessoas) {
+                    pessoas = parseInt(matchPessoas[1]);
+                    document.getElementById("pessoas").textContent = pessoas;
+                }
+
+                // Lógica do caixa livre
+                const caixaVazioEl = document.getElementById("caixaVazio");
+                if (pessoas === 0) {
+                    caixaVazioEl.textContent = "1 Caixa vazio";
+                } else {
+                    caixaVazioEl.textContent = "0 Caixa vazio";
+                }
+
+                if (matchTempo) {
+                    let minutos = parseInt(matchTempo[1]);
+                    let tempoFormatado;
+
+                    if (minutos === 0) {
+                        tempoFormatado = "00:00";
+                    } else {
+                        let horas = Math.floor(minutos / 60);
+                        let restoMinutos = minutos % 60;
+                        let minutosFormatados = restoMinutos.toString().padStart(2, '0');
+                        tempoFormatado = `${horas}:${minutosFormatados}`;
+                    }
+
+                    document.getElementById("total2").textContent = tempoFormatado;
+                }
+            } catch (err) {
+                console.error("Erro ao atualizar:", err);
+            }
+        }
+
+        setInterval(atualizarContagem, 2000);
+        atualizarContagem();
+    </script>
+</body>
+
+</html>

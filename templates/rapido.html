@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Arvo&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Caixas Rápidos</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <img class="img2" src="{{ url_for('static', filename='img/5.png') }}" alt="Imagem">
+        <p class="texto_preferencial23">Caixas Rápido</p>
+        <p class="texto_preferencial3">Total <span id="total2">00:00</span></p>
+        <p class="texto_itens">Para compras abaixo de 15 itens<i class="bi bi-exclamation-circle"></i></p>
+
+        <div class="retangulo_branco">
+            <p class="texto_rapido">Mais rápido<i class="bi bi-arrow-up"></i></p>
+            <p class="texto_retangulo">Caixa 2</p>
+            <div class="linha">
+                <img class="img3" src="{{ url_for('static', filename='img/pessoas.png') }}" alt="Imagem">
+                <p class="texto_contagem">Pessoas na fila: <span id="pessoas">0</span></p>
+            </div>
+
+            <div class="linha">
+                <img class="img3" src="{{ url_for('static', filename='img/relogio2.png') }}" alt="Imagem">
+                <p class="texto_tempo">Tempo estimado: <span id="tempo">00:00</span></p>
+            </div>
+
+        </div>
+
+        <a href="{{ url_for('opcoes') }}" class="botao2">
+            <i class="bi bi-chevron-left"></i> Voltar
+        </a>
+    </div>
+
+    <script>
+        async function atualizarContagem() {
+            try {
+                const resp = await fetch("/count");  // Flask deve retornar algo como "Pessoas: X | Tempo total: Y minutos"
+                const texto = await resp.text();
+
+                // extrai pessoas e minutos
+                const matchPessoas = texto.match(/Pessoas: (\d+)/);
+                const matchTempo = texto.match(/Tempo total: (\d+) minutos/);
+
+                if (matchPessoas) {
+                    document.getElementById("pessoas").textContent = matchPessoas[1];
+                }
+
+                if (matchTempo) {
+                    let minutos = parseInt(matchTempo[1]);
+
+                    let tempoFormatado;
+                    if (minutos === 0) {
+                        tempoFormatado = "00:00";
+                    } else {
+                        let horas = Math.floor(minutos / 60);
+                        let restoMinutos = minutos % 60;
+                        let minutosFormatados = restoMinutos.toString().padStart(2, '0');
+                        tempoFormatado = `${horas}:${minutosFormatados}`;
+                    }
+
+                    // Atualiza TOTAL e tempo do caixa
+                    document.getElementById("total2").textContent = tempoFormatado;
+                    document.getElementById("tempo").textContent = tempoFormatado;
+                }
+            } catch (err) {
+                console.error("Erro ao atualizar:", err);
+            }
+        }
+
+        // atualiza a cada 2 segundos
+        setInterval(atualizarContagem, 2000);
+        atualizarContagem();
+
+    </script>
+</body>
+
+</html>
