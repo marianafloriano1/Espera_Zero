@@ -1,115 +1,137 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Pódio de Caixas</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/estilotv.css') }}">
 
+<head>
+  <meta charset="UTF-8" />
+  <title>Pódio de Caixas</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilotv.css') }}" />
 </head>
+
 <body>
   <div class="podio">
     <div class="col">
       <div class="titulo"></div>
+      <!-- IMAGEM INDICADOR ACIMA DO TEMPO -->
+      <img class="indicador-tempo" src="{{ url_for('static', filename='img/relogio2.png') }}" alt="Indicador de tempo" />
       <div class="tempo" id="tempo-normal">--</div>
       <div class="caixa" id="normal">
         <p class="texto">CAIXA</p>
-        <H1 class="texto2">1</H1>
+        <h1 class="texto2">1</h1>
       </div>
     </div>
 
     <div class="col">
       <div class="titulo"></div>
+      <img class="indicador-tempo" src="{{ url_for('static', filename='img/relogio2.png') }}" alt="Indicador de tempo" />
       <div class="tempo" id="tempo-preferencial">--</div>
-      <div class="caixa" id="preferencial"><img class="img2" src="{{ url_for('static', filename='img/c.png') }}" alt="Imagem"></div>
+      <div class="caixa" id="preferencial">
+        <img class="img2" src="{{ url_for('static', filename='img/c.png') }}" alt="Imagem" />
+      </div>
     </div>
 
     <div class="col">
       <div class="titulo"></div>
+      <img class="indicador-tempo" src="{{ url_for('static', filename='img/relogio2.png') }}" alt="Indicador de tempo" />
       <div class="tempo" id="tempo-rapido">--</div>
-      <div class="caixa" id="rapido"><img class="img2" src="{{ url_for('static', filename='img/r.png') }}" alt="Imagem"></div>
+      <div class="caixa" id="rapido">
+        <img class="img2" src="{{ url_for('static', filename='img/r.png') }}" alt="Imagem" />
+      </div>
     </div>
 
     <div class="col">
       <div class="titulo"></div>
+      <img class="indicador-tempo" src="{{ url_for('static', filename='img/relogio2.png') }}" alt="Indicador de tempo" />
       <div class="tempo" id="tempo-autoatendimento">--</div>
-      <div class="caixa" id="autoatendimento"><img class="img2" src="{{ url_for('static', filename='img/a.png') }}" alt="Imagem"></div>
+      <div class="caixa" id="autoatendimento">
+        <img class="img2" src="{{ url_for('static', filename='img/a.png') }}" alt="Imagem" />
+      </div>
     </div>
   </div>
 
   <script>
-    async function atualizarPodio() {
-  try {
-    const resp = await fetch("/count");
-    const texto = await resp.text();
-
-    const match = texto.match(/Tempo total: (\d+) minutos/);
-    if (!match) return;
-    let minutos = parseInt(match[1]);
-
-    const tempos = {
-      normal: minutos,
-      preferencial: Math.max(0, minutos - 5),
-      rapido: Math.max(0, minutos - 10),
-      autoatendimento: Math.max(0, minutos - 15)
+    const temposSimulados = {
+      preferencial: 0,
+      rapido: 0,
+      autoatendimento: 0,
     };
 
-    // encontra o maior tempo
-    const maiorTempo = Math.max(...Object.values(tempos));
+    function tempoAleatorio() {
+      const valores = [0, 5, 10, 15, 20, 25, 30];
+      return valores[Math.floor(Math.random() * valores.length)];
+    }
 
-    for (let id in tempos) {
-      let caixa = document.getElementById(id);
-      let tempoSpan = document.getElementById(`tempo-${id}`);
-      let tempo = tempos[id];
-
-      // formata tempo
-      let displayTime;
-      if (tempo === 0) {
-        displayTime = "00:00";
-      } else {
-        let horas = Math.floor(tempo / 60);
-        let resto = tempo % 60;
-        displayTime = `${horas}:${resto.toString().padStart(2,'0')}`;
-      }
-      tempoSpan.textContent = displayTime;
-
-      // pega a imagem do título
-      let tituloImg = caixa.parentElement.querySelector(".titulo");
-
-      // muda imagem do título conforme regra
-      if (tempo === 0) {
-        tituloImg.src = "{{ url_for('static', filename='img/livre.png') }}";
-      } else if (tempo === maiorTempo) {
-        tituloImg.src = "{{ url_for('static', filename='img/alerta.png') }}";
-      } else {
-        // volta para imagem padrão de cada caixa
-        if (id === "normal") {
-          tituloImg.src = "{{ url_for('static', filename='img/normal.png') }}";
-        } else if (id === "preferencial") {
-          tituloImg.src = "{{ url_for('static', filename='img/preferencial.png') }}";
-        } else if (id === "rapido") {
-          tituloImg.src = "{{ url_for('static', filename='img/rapido.png') }}";
-        } else if (id === "autoatendimento") {
-          tituloImg.src = "{{ url_for('static', filename='img/auto.png') }}";
-        }
-      }
-
-      // ajusta altura do pódio
+    function atualizarImagemPorTempo(img, tempo) {
       if (tempo <= 5) {
-        caixa.classList.add("alto");
-        caixa.style.height = "400px";
+        img.src = "{{ url_for('static', filename='img/rapido.png') }}";
+      } else if (tempo >= 25) {
+        img.src = "{{ url_for('static', filename='img/lento.png') }}";
       } else {
-        caixa.classList.remove("alto");
-        caixa.style.height = `${120 + tempo * 2}px`;
+        img.src = "{{ url_for('static', filename='img/relogio2.png') }}";
       }
     }
-  } catch (err) {
-    console.error("Erro ao atualizar pódio:", err);
-  }
-}
 
-setInterval(atualizarPodio, 2000);
-atualizarPodio();
+    function simularTempoAleatorio() {
+      ['preferencial', 'rapido', 'autoatendimento'].forEach((id) => {
+        const novoTempo = tempoAleatorio();
+        temposSimulados[id] = novoTempo;
 
+        const caixa = document.getElementById(id);
+        const tempoSpan = document.getElementById(`tempo-${id}`);
+        const imgIndicador = caixa.parentElement.querySelector('.indicador-tempo');
+
+        const displayTime = novoTempo === 0 ? '00:00' : `0:${novoTempo.toString().padStart(2, '0')}`;
+        tempoSpan.textContent = displayTime;
+
+        // Atualiza imagem conforme tempo
+        atualizarImagemPorTempo(imgIndicador, novoTempo);
+
+        // Altura inversamente proporcional
+        const alturaMaxima = 400;
+        const alturaMinima = 120;
+        const altura = alturaMaxima - novoTempo * 8;
+        caixa.style.height = `${Math.max(alturaMinima, altura)}px`;
+      });
+    }
+
+    async function atualizarCaixaNormal() {
+      try {
+        const resp = await fetch('/count');
+        const texto = await resp.text();
+
+        const match = texto.match(/Tempo total: (\d+) minutos/);
+        if (!match) return;
+
+        const minutos = parseInt(match[1]);
+
+        const caixa = document.getElementById('normal');
+        const imgIndicador = caixa.parentElement.querySelector('.indicador-tempo');
+        const tempoSpan = document.getElementById('tempo-normal');
+        const tituloImg = caixa.parentElement.querySelector('.titulo');
+
+        const displayTime = minutos === 0 ? '00:00' : `${Math.floor(minutos / 60)}:${(minutos % 60).toString().padStart(2, '0')}`;
+        tempoSpan.textContent = displayTime;
+
+        const alturaMaxima = 400;
+        const alturaMinima = 120;
+        const altura = alturaMaxima - minutos * 2;
+        caixa.style.height = `${Math.max(alturaMinima, altura)}px`;
+
+        atualizarImagemPorTempo(imgIndicador, minutos);
+
+        if (minutos === 0) {
+          tituloImg.src = "{{ url_for('static', filename='img/livre.png') }}";
+        } else {
+          tituloImg.src = "{{ url_for('static', filename='img/normal.png') }}";
+        }
+      } catch (err) {
+        console.error('Erro ao atualizar caixa normal:', err);
+      }
+    }
+
+    setInterval(simularTempoAleatorio, 1000); // simulados trocam a cada 1s
+    setInterval(atualizarCaixaNormal, 5000); // normal atualiza a cada 5s
+    atualizarCaixaNormal(); // inicial
   </script>
 </body>
+
 </html>

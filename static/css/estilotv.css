@@ -1,69 +1,84 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100vh;
+  margin: 0;
+  background: #f4f4f4;
+  padding-bottom: 20px;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      height: 100vh;
-      margin: 0;
-      background: #f4f4f4;
-      padding-bottom: 20px;
-    }
+.podio {
+  display: flex;
+  gap: 70px;
+  align-items: flex-end;
+  /* mantém caixas alinhadas pela base */
+}
 
-    .podio {
-      display: flex;
-      gap: 70px;
-      align-items: flex-start; /* mantém caixas alinhadas pela base */
-    }
+/* coluna = título + tempo + caixa */
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    /* coluna = título + tempo + caixa */
-    .col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+.titulo {
+  width: 100px;
+}
 
-    .titulo {
-      width: 100px;
-    }
+.tempo {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 4px 0 10px 0;
+  color: #333;
+}
 
-    .tempo {
-      font-size: 16px;
-      font-weight: bold;
-      margin: 4px 0 10px 0;
-      color: #333;
-    }
+.caixa {
+  width: 180px;
+  background: #47525e;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; 
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s, background 0.5s;
+  position: relative;
+  overflow: hidden;
+}
 
-    .caixa {
-      width: 180px;
-      min-height: 120px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 4px 4px 0 0;
-      transition: height 0.5s, background 0.5s;
-      background: #7aa7c7;
-    }
+/* Imagem sempre no topo da caixa */
+.img2 {
+  width: 60px;
+  height: auto;
+  border-radius: 4px;
+  margin-top: 40px; /* espaço do topo da caixa */
+}
 
-    .caixa.alto {
-      background: #47525e;
-    }
-
-    .img2 {
-      width: 60px;
-      height: auto;
-      border-radius: 4px;
-      margin-top: -250px;
-    }
-
-    .texto {
-    margin-top: -280px;
-    position: absolute;
-    color: #fff;
-    }
-
-    .texto2 {
-    margin-top: -200px;
+/* Texto sobreposto na imagem */
+.texto {
+  position: absolute;
+  top: 30px;  /* Ajuste conforme altura da imagem */
   color: #fff;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.texto2 {
+  position: absolute;
+  top: 60px; /* Ajuste conforme necessário */
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+ .indicador-tempo {
+      width: 70px;
+      height: auto;
+      margin-top: 10px;
+      transition: all 0.3s ease;
     }
-  
