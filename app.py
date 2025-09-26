@@ -93,6 +93,10 @@ def autoatendimento():
 def normal():
     return render_template("normal.html")
 
+@app.route("/tv")
+def tv():
+    return render_template("tv.html")
+
 @app.route("/count")
 def count():
     return f"Pessoas: {total_pessoas} | Tempo total: {tempo_total} minutos"
