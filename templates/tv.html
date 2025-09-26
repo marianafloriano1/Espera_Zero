@@ -3,104 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <title>Pódio de Caixas</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      height: 100vh;
-      margin: 0;
-      background: #f4f4f4;
-    }
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/estilotv.css') }}">
 
-    .podio {
-      display: flex;
-      gap: 20px;
-      align-items: flex-end;
-    }
-
-    .caixa {
-      width: 100px;
-      background: #4CAF50;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      border-radius: 8px 8px 0 0;
-      transition: height 0.5s, background 0.5s;
-      padding-bottom: 10px;
-    }
-
-    .tempo {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .caixa.alto {
-      background: #2196F3;
-    }
-  </style>
 </head>
 <body>
   <div class="podio">
-    <div class="caixa" id="normal"><span class="tempo">--</span>Normal</div>
-    <div class="caixa" id="preferencial"><span class="tempo">--</span>Pref.</div>
-    <div class="caixa" id="rapido"><span class="tempo">--</span>Rápido</div>
-    <div class="caixa" id="autoatendimento"><span class="tempo">--</span>Auto</div>
+    <div class="col">
+      <div class="titulo"></div>
+      <div class="tempo" id="tempo-normal">--</div>
+      <div class="caixa" id="normal">
+        <p class="texto">CAIXA</p>
+        <H1 class="texto2">1</H1>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="titulo"></div>
+      <div class="tempo" id="tempo-preferencial">--</div>
+      <div class="caixa" id="preferencial"><img class="img2" src="{{ url_for('static', filename='img/c.png') }}" alt="Imagem"></div>
+    </div>
+
+    <div class="col">
+      <div class="titulo"></div>
+      <div class="tempo" id="tempo-rapido">--</div>
+      <div class="caixa" id="rapido"><img class="img2" src="{{ url_for('static', filename='img/r.png') }}" alt="Imagem"></div>
+    </div>
+
+    <div class="col">
+      <div class="titulo"></div>
+      <div class="tempo" id="tempo-autoatendimento">--</div>
+      <div class="caixa" id="autoatendimento"><img class="img2" src="{{ url_for('static', filename='img/a.png') }}" alt="Imagem"></div>
+    </div>
   </div>
 
   <script>
     async function atualizarPodio() {
-      try {
-        const resp = await fetch("/count");  
-        const texto = await resp.text();
+  try {
+    const resp = await fetch("/count");
+    const texto = await resp.text();
 
-        // Pega o tempo total em minutos
-        const match = texto.match(/Tempo total: (\d+) minutos/);
-        if (!match) return;
-        
-        let minutos = parseInt(match[1]);
+    const match = texto.match(/Tempo total: (\d+) minutos/);
+    if (!match) return;
+    let minutos = parseInt(match[1]);
 
-        // Simulação: dividir o tempo entre os caixas (você pode ajustar)
-        const tempos = {
-          normal: minutos,
-          preferencial: Math.max(0, minutos - 5),
-          rapido: Math.max(0, minutos - 10),
-          autoatendimento: Math.max(0, minutos - 15)
-        };
+    const tempos = {
+      normal: minutos,
+      preferencial: Math.max(0, minutos - 5),
+      rapido: Math.max(0, minutos - 10),
+      autoatendimento: Math.max(0, minutos - 15)
+    };
 
-        for (let id in tempos) {
-          let caixa = document.getElementById(id);
-          let span = caixa.querySelector(".tempo");
-          let tempo = tempos[id];
+    // encontra o maior tempo
+    const maiorTempo = Math.max(...Object.values(tempos));
 
-          // Exibir tempo
-          if (tempo === 0) {
-            span.textContent = "00:00";
-          } else {
-            let horas = Math.floor(tempo / 60);
-            let resto = tempo % 60;
-            span.textContent = `${horas}:${resto.toString().padStart(2,'0')}`;
-          }
+    for (let id in tempos) {
+      let caixa = document.getElementById(id);
+      let tempoSpan = document.getElementById(`tempo-${id}`);
+      let tempo = tempos[id];
 
-          // Ajustar altura do pódio
-          if (tempo <= 5) {
-            caixa.classList.add("alto");
-            caixa.style.height = "250px";
-          } else {
-            caixa.classList.remove("alto");
-            caixa.style.height = `${120 + tempo * 2}px`; // altura proporcional
-          }
+      // formata tempo
+      let displayTime;
+      if (tempo === 0) {
+        displayTime = "00:00";
+      } else {
+        let horas = Math.floor(tempo / 60);
+        let resto = tempo % 60;
+        displayTime = `${horas}:${resto.toString().padStart(2,'0')}`;
+      }
+      tempoSpan.textContent = displayTime;
+
+      // pega a imagem do título
+      let tituloImg = caixa.parentElement.querySelector(".titulo");
+
+      // muda imagem do título conforme regra
+      if (tempo === 0) {
+        tituloImg.src = "{{ url_for('static', filename='img/livre.png') }}";
+      } else if (tempo === maiorTempo) {
+        tituloImg.src = "{{ url_for('static', filename='img/alerta.png') }}";
+      } else {
+        // volta para imagem padrão de cada caixa
+        if (id === "normal") {
+          tituloImg.src = "{{ url_for('static', filename='img/normal.png') }}";
+        } else if (id === "preferencial") {
+          tituloImg.src = "{{ url_for('static', filename='img/preferencial.png') }}";
+        } else if (id === "rapido") {
+          tituloImg.src = "{{ url_for('static', filename='img/rapido.png') }}";
+        } else if (id === "autoatendimento") {
+          tituloImg.src = "{{ url_for('static', filename='img/auto.png') }}";
         }
-      } catch (err) {
-        console.error("Erro ao atualizar pódio:", err);
+      }
+
+      // ajusta altura do pódio
+      if (tempo <= 5) {
+        caixa.classList.add("alto");
+        caixa.style.height = "400px";
+      } else {
+        caixa.classList.remove("alto");
+        caixa.style.height = `${120 + tempo * 2}px`;
       }
     }
+  } catch (err) {
+    console.error("Erro ao atualizar pódio:", err);
+  }
+}
 
-    setInterval(atualizarPodio, 2000);
-    atualizarPodio();
+setInterval(atualizarPodio, 2000);
+atualizarPodio();
+
   </script>
 </body>
 </html>

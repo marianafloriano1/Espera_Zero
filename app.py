@@ -16,7 +16,7 @@ hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 def contar_pessoas():
     global total_pessoas, tempo_total, next_id, tracked_people
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(0) #mude para 0 se quiser que a camera funcione
     frame_count = 0
 
     while True:
