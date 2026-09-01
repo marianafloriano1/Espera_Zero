@@ -62,7 +62,7 @@ O totem principal exibe o tempo estimado geral e o detalhamento por caixa, indic
 
 ```bash
 # Clone o repositório
-git clone https://github.com/marianafloriano1/Espera_Zero
+git clone https://github.com/marianafloriano1/Espera_Zero.git
 
 # Acesse a pasta do projeto
 cd Espera_Zero
